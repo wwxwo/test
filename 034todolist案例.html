@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ToDoList</title>
+		<link rel="stylesheet" type="text/css" href="../dist/css/bootstrap.min.css" />
+		<script crossorigin="anonymous" src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script crossorigin="anonymous" src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.min.js"></script>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			ul,
+			ol {
+				list-style: none;
+			}
+
+			body {
+				background-color: rgba(0, 0, 0, 0.2);
+			}
+
+			header {
+				background-color: #333;
+				color: #fff;
+				height: 42px;
+			}
+
+			section {
+				width: 600px;
+				margin: 0 auto;
+			}
+
+			footer {
+				text-align: center;
+				color: #777;
+			}
+
+			header label {
+				line-height: 42px;
+				font-size: 20px;
+				font-weight: normal;
+			}
+
+			header input {
+				float: right;
+				width: 300px;
+				height: 22px;
+				margin-top: 10px;
+				border: 0;
+				border-radius: 6px;
+				padding-left: 5px;
+				color: #000000;
+			}
+
+			h2 {
+				font-size: 20px;
+				font-weight: 700;
+			}
+
+			span {
+				background-color: #e5e8f0;
+				border-radius: 10px;
+				width: 20px;
+				height: 20px;
+				text-align: center;
+				line-height: 20px;
+				font-size: 14px;
+				float: right;
+			}
+
+			#todolist li,
+			#donelist li {
+				background-color: #FFFFFF;
+				border-radius: 5px;
+				padding-left: 20px;
+				height: 24px;
+				line-height: 24px;
+				width: 600px;
+				margin: 8px 0;
+				position: relative;
+			}
+
+			#donelist li {
+				background-color: rgba(255, 255, 255, 0.5);
+				color: #777;
+			}
+
+			li input {
+				position: absolute;
+				top: 1px;
+				left: 10px;
+			}
+
+			li p {
+				position: absolute;
+				top: 0;
+				left: 30px;
+			}
+
+			li a {
+				height: 20px;
+				width: 20px;
+				float: right;
+			}
+		</style>
+		<script type="text/javascript">
+			$(function() {
+				var todolist = [];
+				$('#title').on('keydown', function(e) {
+
+					if (e.keyCode === 13) {
+						if ($(this).val() === '') {
+							return;
+						} else {
+							let local = getData();
+							local.push({
+								title: $(this).val(),
+								done: false
+							});
+							setData(local);
+							$(this).val('');
+							load();
+						}
+
+					}
+				})
+				$('ol,ul').on('click', 'a', function() {
+					let data = getData();
+					let index = $(this).attr('data-i');
+					data.splice(index, 1);
+					setData(data);
+					load();
+				})
+				$('ol,ul').on('click', 'input', function() {
+					let data = getData();
+					let index = $(this).siblings('a').attr('data-i');
+					data[index].done = $(this).prop('checked');
+					setData(data);
+					load();
+				})
+				load();
+
+				function load() {
+					let data = getData();
+					let todocount = 0;
+					let donecount = 0;
+					$('ul,ol').empty();
+					$.each(data, function(i, n) {
+						if (n.done) {
+							$('ul').prepend('<li><input type="checkbox" checked><p>' + n.title +
+								'</p><a href="javascript:;" data-i="' + i + '">X</a> </li>');
+							donecount++;
+						} else {
+							$('ol').prepend('<li><input type="checkbox"><p>' + n.title +
+								'</p><a href="javascript:;" data-i="' + i + '">X</a> </li>');
+							todocount++;
+						}
+
+					})
+					$('#todocount').text(todocount);
+					$('#donecount').text(donecount);
+				}
+
+				function setData(data) {
+					localStorage.setItem('todolist', JSON.stringify(data));
+				}
+
+				function getData() {
+					var data = localStorage.getItem('todolist');
+					if (data !== null) {
+						return JSON.parse(data);
+					} else {
+						return [];
+					}
+				}
+			})
+		</script>
+	</head>
+	<body>
+		<header>
+			<section>
+				<label for="title">ToDoList</label>
+				<input type="text" id="title" name="title" placeholder="添加ToDo" required="required">
+			</section>
+		</header>
+		<section>
+			<h2>正在进行 <span id="todocount"></span></h2>
+			<ol id="todolist" class="demo-box">
+
+			</ol>
+			<h2>已经完成 <span id="donecount"></span></h2>
+			<ul id="donelist">
+
+			</ul>
+		</section>
+		<footer>
+			Copyright &copy; 2022 todolist.cn
+		</footer>
+	</body>
+</html>
